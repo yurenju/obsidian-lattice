@@ -1,1 +1,5 @@
 .claude/worktrees/
+
+# Obsidian 開啟樣本庫時自動產生的個人狀態
+sample-vault/.obsidian/workspace*.json
+sample-vault/.obsidian/plugins/*/data.json

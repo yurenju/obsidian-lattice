@@ -1,0 +1,31 @@
+# 樣本庫（Sample vault）
+
+用來驗證 Lattice 每一個設計決定的替身筆記。結構仿照真實的文章與專案筆記，內容全部改寫，不含任何個人資訊。
+
+## 開啟方式
+
+1. 開啟 Obsidian，在 vault 選單選「Open folder as vault」。
+2. 選擇本 repo 的 `sample-vault/` 資料夾。
+3. 第一次開啟時，Obsidian 會詢問是否信任這個 vault 的 plugin，選「Trust author and enable plugins」，Tasks plugin 才會啟用並渲染查詢結果。
+
+## 內容
+
+| 檔案 | 類型 | 用來檢查 |
+|---|---|---|
+| `專案筆記/2026-10-05.md` | 專案筆記（每日） | emoji 標題、已完成與未完成任務、Tasks 查詢結果、巢狀清單 |
+| `專案筆記/2026-10.md` | 專案筆記（每月） | 包在可收合 callout 裡的 Tasks 查詢、日記式巢狀清單 |
+| `專案筆記/2026-10-weekly.md` | 專案筆記（每週） | 大量連續的 `##` 標題與空的查詢結果 |
+| `專案/植物園導覽手冊/植物園導覽手冊.md` | 專案筆記（專案頁） | 各種優先度、日期、重複、取消的任務；表格；properties |
+| `文章/2026-09-14_窗櫺/窗櫺.md` | 文章 | 長段落、圖片、引言、粗體、書名號、日文詞彙 |
+| `混排測試.md` | 混排文字 | 地區字形、缺字、同一行混排、標點、行內樣式 |
+| `元素總覽.md` | 所有元素 | 六級標題、清單、任務狀態、引言、callout、程式碼、表格、註腳 |
+
+`專案筆記/2026-10-05.md` 的「今日工作」查詢會抓到 `植物園導覽手冊.md` 裡排程在 2026-10-05 的任務，以及自己「臨時」段落下的任務。
+
+## Plugin
+
+`.obsidian/plugins/obsidian-tasks-plugin/` 是 Tasks plugin 8.4.0 的官方發行檔（MIT 授權），直接放在 repo 裡，開啟樣本庫就能使用，不必另外安裝。
+
+## Theme 開發
+
+開發 Lattice 時，theme 會放在 `.obsidian/themes/Lattice/`，存檔後 Obsidian 會自動重新載入 `theme.css`。
