@@ -1,0 +1,636 @@
+/*
+ * Lattice — 個人用的 Obsidian theme。
+ * 規格：https://github.com/yurenju/obsidian-lattice/issues/17（Lattice theme 規格（第一輪））
+ * 各段開頭的「§n」對應規格的章節。
+ *
+ * 寫法規則（§2）：
+ * - 色彩變數只寫在 §14／§15 的兩個區塊。選擇器是 `:root body.theme-dark`（權重 0,2,1），
+ *   才蓋得過 Obsidian 的 `.theme-dark` 重設與 Android 的 `.is-mobile.theme-dark`（0,2,0）。
+ * - `--font-text-size` 這類被 Obsidian 寫在 body inline style 的變數，寫在 `.app-container`。
+ * - Live Preview 的垂直間距只用 padding，不用 margin（CodeMirror 靠行高算游標位置）。
+ * - 元素樣式裡的顏色一律用 `--lattice-*` token，深淺兩版各自給值。
+ * - 其餘規則一律以 `:root body` 開頭（多 0,1,1 的權重），才蓋得過 Obsidian 的
+ *   `.markdown-rendered thead tr > th` 這類選擇器。權重與試作分支的 `body.lattice-elem` 相同。
+ */
+
+/* ===================================================================
+ * §3 字型：@font-face 別名
+ * Noto Sans CJK 只有 7 個固定字重，用別名把中文綁死在兩個槽：
+ * 一般槽 1–549 → DemiLight／Light，粗體槽 550–1000 → Bold。
+ * =================================================================== */
+
+/* 正文 */
+@font-face { font-family: "Lattice CJK"; src: local("NotoSansCJKtc-DemiLight"), local("Noto Sans CJK TC DemiLight"); font-weight: 1 549; }
+@font-face { font-family: "Lattice CJK"; src: local("NotoSansCJKtc-Bold"), local("Noto Sans CJK TC Bold"); font-weight: 550 1000; }
+
+/* 中英共用標點 “ ” ‘ ’ … — 交給 CJK 字型（中文的 …、—— 必須是全形） */
+@font-face { font-family: "Lattice CJK Punct"; src: local("NotoSansCJKtc-DemiLight"), local("Noto Sans CJK TC DemiLight"); font-weight: 1 549; unicode-range: U+2014, U+2018-2019, U+201C-201D, U+2026; }
+@font-face { font-family: "Lattice CJK Punct"; src: local("NotoSansCJKtc-Bold"), local("Noto Sans CJK TC Bold"); font-weight: 550 1000; unicode-range: U+2014, U+2018-2019, U+201C-201D, U+2026; }
+
+/* 標題：一律 Bold */
+@font-face { font-family: "Lattice CJK Heading"; src: local("NotoSansCJKtc-Bold"), local("Noto Sans CJK TC Bold"); }
+
+/* 引言：明體 Light／Bold */
+@font-face { font-family: "Lattice Serif"; src: local("NotoSerifCJKtc-Light"), local("Noto Serif CJK TC Light"); font-weight: 1 549; }
+@font-face { font-family: "Lattice Serif"; src: local("NotoSerifCJKtc-Bold"), local("Noto Serif CJK TC Bold"); font-weight: 550 1000; }
+
+/* 標題裡的 emoji：縮到 90%，並強制彩色（🗂、🛠 這類預設是文字樣式的 emoji 也會被接住） */
+@font-face {
+  font-family: "Lattice Emoji";
+  src: local("Segoe UI Emoji"), local("SegoeUIEmoji"), local("Noto Color Emoji"), local("NotoColorEmoji");
+  size-adjust: 90%;
+  unicode-range: U+2600-27BF, U+2B50, U+2B55, U+FE0F, U+1F000-1FAFF;
+}
+
+/* ===================================================================
+ * 不分深淺的變數（§3、§5、§7、§8、§10、§12）
+ * Obsidian 的標題字重變數寫在 :root，寫在 body 上就能蓋過。
+ * =================================================================== */
+:root body {
+  /* §3 字型堆疊 */
+  --font-text-theme: "Lattice CJK Punct", "Inter", "Lattice CJK", "Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --font-interface-theme: "Inter", "Noto Sans CJK TC", "Microsoft JhengHei", sans-serif;
+  --font-monospace-theme: "JetBrains Mono", "Noto Sans CJK TC", Consolas, monospace;
+  --lattice-heading-font: "Lattice Emoji", "Lattice CJK Punct", "Inter", "Lattice CJK Heading", "Noto Sans CJK TC", "Microsoft JhengHei", sans-serif;
+  --lattice-quote-font: "Lattice Serif", "Noto Serif TC", "PMingLiU", serif;
+  font-synthesis: none;
+
+  /* §5 標題 */
+  --h1-font: var(--lattice-heading-font);
+  --h2-font: var(--lattice-heading-font);
+  --h3-font: var(--lattice-heading-font);
+  --h4-font: var(--lattice-heading-font);
+  --h5-font: var(--lattice-heading-font);
+  --h6-font: var(--lattice-heading-font);
+  --inline-title-font: var(--lattice-heading-font);
+
+  --h1-size: 1.6em;
+  --h2-size: 1.3em;
+  --h3-size: 1em;
+  --h4-size: 1em;
+  --h5-size: 1em;
+  --h6-size: 1em;
+
+  --h1-line-height: 1.3;
+  --h2-line-height: 1.3;
+  --h3-line-height: 1.7;
+  --h4-line-height: 1.7;
+  --h5-line-height: 1.7;
+  --h6-line-height: 1.7;
+
+  --h1-color: var(--text-normal);
+  --h2-color: var(--text-normal);
+  --h3-color: var(--text-muted);
+  --h4-color: var(--text-faint);
+  --h5-color: var(--text-faint);
+  --h6-color: var(--text-faint);
+
+  --h1-weight: 700;
+  --h2-weight: 700;
+  --h3-weight: 700;
+  --h4-weight: 700;
+  --h5-weight: 700;
+  --h6-weight: 700;
+  --inline-title-weight: 700;
+
+  --h1-letter-spacing: 0;
+  --h2-letter-spacing: 0;
+  --h3-letter-spacing: 0;
+  --h4-letter-spacing: 0;
+
+  --heading-spacing: 2.5rem;
+
+  /* §7 連結沒有底線 */
+  --link-decoration: none;
+  --link-external-decoration: none;
+
+  /* §8 引言文字用正文色 */
+  --blockquote-color: var(--text-normal);
+
+  /* §10 程式碼區塊 */
+  --code-radius: 4px;
+  --code-white-space: pre-wrap;
+}
+
+/* ===================================================================
+ * §4 內文節奏（寫在 .app-container 才蓋得過 body 的 inline style）
+ * §11 的表格字級也放這裡：calc 裡的 --font-text-size 要在這一層才是 16px。
+ * =================================================================== */
+:root body .app-container {
+  --font-text-size: 16px;
+  --line-height-normal: 1.7;
+  --file-line-width: calc(46 * var(--font-text-size)); /* 46 個中文字，736px */
+  --p-spacing: 1rem;
+
+  --table-text-size: calc(var(--font-text-size) * 0.875);
+  --table-header-size: calc(var(--font-text-size) * 0.875);
+}
+
+/* §3 字重：英文正文 350、中文 DemiLight；粗體 350 + 350 = 700、中文 Bold。
+ * §4 段尾孤字、標點擠壓、中英自動間距。 */
+:root body :is(.markdown-preview-view, .markdown-source-view.mod-cm6 .cm-content) {
+  --font-weight: 350;
+  --bold-modifier: 350;
+  font-weight: var(--font-weight);
+  text-wrap: pretty;
+  text-spacing-trim: normal;
+  text-autospace: no-autospace;
+}
+
+/* §4 兩端對齊，只作用在最外層段落 */
+:root body .markdown-preview-view .el-p > p,
+:root body .markdown-source-view.mod-cm6.is-live-preview .cm-line:not([class*="HyperMD-"]) {
+  text-align: justify;
+}
+
+/* §3 數字：表格與任務用等寬數字 */
+:root body :is(table, .tasks-list-text) {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===================================================================
+ * §5 標題
+ * =================================================================== */
+:root body .markdown-rendered :is(h1, h2, h3, h4, h5, h6),
+:root body .markdown-source-view.mod-cm6 :is(.HyperMD-header, .cm-header),
+:root body .inline-title {
+  font-family: var(--lattice-heading-font);
+}
+
+:root body .markdown-rendered :is(h3, h4, h5, h6),
+:root body .markdown-source-view.mod-cm6 :is(.HyperMD-header-3, .HyperMD-header-4, .HyperMD-header-5, .HyperMD-header-6) {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Live Preview 吃不到 --heading-spacing，另外設。下方的 padding 讓標題不會貼在 Tasks 查詢、callout 等 widget 上。 */
+:root body .markdown-source-view.mod-cm6.is-live-preview .cm-line.HyperMD-header {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* ===================================================================
+ * §6 強調：不用斜體，改成點狀底線
+ * =================================================================== */
+:root body :is(.markdown-rendered em, .markdown-source-view.mod-cm6 .cm-em) {
+  font-style: normal;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--text-muted);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+}
+
+/* ===================================================================
+ * §8 引言：明體 Light 300＋5px 雙線
+ * Obsidian 的引言線寫死 solid，所以直接覆寫 border-inline-start。
+ * =================================================================== */
+:root body .markdown-rendered blockquote {
+  border-inline-start: 5px double var(--lattice-quote-line);
+}
+
+/* Reading view：只有最外層整段縮排，巢狀引言沿用預設位置 */
+:root body .markdown-rendered blockquote:not(blockquote blockquote) {
+  margin-inline-start: 1em;
+  padding-inline-start: 0.75em;
+  font-family: var(--lattice-quote-font);
+  --font-weight: 300; /* **粗體** = 300 + 350 = 650，落在 Bold 槽 */
+  font-weight: var(--font-weight);
+  font-size: 0.9375em;
+  line-height: 1.65;
+}
+
+/* Live Preview：文字縮排是 Obsidian 寫在行上的 inline style，改 padding 會被蓋掉，所以整行用 margin 移動。 */
+:root body .markdown-source-view.mod-cm6.is-live-preview .HyperMD-quote {
+  margin-inline-start: 0.75em;
+  font-family: var(--lattice-quote-font);
+  --font-weight: 300;
+  font-weight: var(--font-weight);
+  font-size: 0.9375em;
+  line-height: 1.65;
+}
+:root body .markdown-source-view.mod-cm6.is-live-preview .HyperMD-quote::before {
+  inset-inline-start: 0;
+  border-inline-start: 5px double var(--lattice-quote-line);
+}
+:root body .markdown-source-view.mod-cm6 .cm-blockquote-border::before {
+  border-inline-start: 5px double var(--lattice-quote-line);
+}
+
+/* 游標所在行：雙線會跟顯示出來的 > 重疊，改成透明。
+ * 用 .cm-active 判斷（.hmd-inactive-line 不在行上）；不要移動 >，否則游標點不到它。 */
+:root body .markdown-source-view.mod-cm6.is-live-preview .HyperMD-quote.cm-active::before,
+:root body .markdown-source-view.mod-cm6.is-live-preview .HyperMD-quote.cm-active .cm-blockquote-border::before {
+  border-inline-start-color: transparent;
+}
+
+/* ===================================================================
+ * §9 callout：跟引言同一個家族
+ * =================================================================== */
+:root body .callout {
+  margin-inline-start: 1em;
+  padding: 0.5em 0.75em 0.5em 0.5em;
+  border: 0;
+  border-inline-start: 5px double rgba(var(--callout-color), 0.75);
+  border-radius: 0;
+  background-color: transparent;
+}
+/* Live Preview：Obsidian 用 `.markdown-source-view.mod-cm6 .callout { margin: 0 }` 把縮排歸零 */
+:root body .markdown-source-view.mod-cm6 .callout {
+  margin-inline-start: 1em;
+}
+:root body .callout-title {
+  padding: 0;
+  color: var(--text-normal);
+  font-weight: 700;
+}
+:root body .callout-icon {
+  color: rgb(var(--callout-color));
+}
+:root body .callout-fold {
+  color: var(--text-faint);
+}
+:root body .callout-content {
+  padding: 0.5em 0 0;
+}
+
+/* Live Preview hover：外框畫在最外層的 .cm-embed-block，從這層拿掉，改成類型色 8% 的淡底 */
+:root body .markdown-source-view.mod-cm6 .cm-embed-block.cm-callout:hover {
+  box-shadow: none;
+  border-radius: 0;
+}
+:root body .markdown-source-view.mod-cm6 .cm-embed-block.cm-callout:hover .callout {
+  background-color: rgba(var(--callout-color), 0.08);
+}
+
+/* ===================================================================
+ * §3、§10 程式碼
+ * =================================================================== */
+:root body :is(.markdown-rendered code, .markdown-source-view.mod-cm6 .cm-inline-code, .markdown-source-view.mod-cm6 .HyperMD-codeblock) {
+  font-size: 0.9em;
+  font-variant-ligatures: normal;
+}
+
+:root body .markdown-rendered pre,
+:root body .markdown-rendered pre code,
+:root body .markdown-source-view.mod-cm6 .HyperMD-codeblock {
+  line-height: 1.5;
+}
+
+:root body .markdown-rendered pre code {
+  white-space: pre-wrap;
+}
+
+/* 行內程式碼：Obsidian 跟程式碼區塊共用 --code-background，所以另外寫 */
+:root body .markdown-rendered :not(pre) > code,
+:root body .markdown-source-view.mod-cm6 .cm-inline-code {
+  background-color: var(--lattice-code-inline-bg);
+  border-radius: 3px;
+  box-shadow: none;
+}
+/* Live Preview 不加內距：游標進入時反引號會被拆成好幾個 span */
+:root body .markdown-rendered :not(pre) > code {
+  padding: 0.1em 0.3em;
+}
+
+/* ===================================================================
+ * §11 表格
+ * =================================================================== */
+:root body :is(.markdown-rendered, .cm-table-widget) table :is(th, td) {
+  border: 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+  padding: 6px 1.25em;
+  background: transparent;
+  line-height: 1.5;
+  /* table 上的 font-size 不會繼承到儲存格，要直接寫在 th、td */
+  font-size: calc(var(--font-text-size) * 0.875);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+:root body :is(.markdown-rendered, .cm-table-widget) table th {
+  border-bottom-color: var(--lattice-table-header-rule);
+  color: var(--text-muted);
+  font-weight: 700;
+  text-align: left;
+}
+
+/* 修正：Live Preview 寬表格的拖曳把手與「新增欄」按鈕超出 widget 右緣，觸發捲軸 */
+:root body .markdown-source-view.mod-cm6 .cm-table-widget {
+  padding-inline-end: 20px;
+  margin-inline-end: -20px;
+}
+
+/* ===================================================================
+ * §12 任務與 Tasks 查詢結果
+ * 已完成 [x] 維持 Obsidian 預設（刪除線＋--checklist-done-color），顏色在 §14、§15。
+ * =================================================================== */
+:root body input.task-list-item-checkbox {
+  --checkbox-radius: 50%;
+}
+
+/* 取消 [-]：淡化＋細刪除線；checkbox 改成外框＋置中橫線 */
+:root body :is(ul > li.task-list-item, .markdown-source-view.mod-cm6 .HyperMD-task-line)[data-task="-"] {
+  color: var(--text-faint);
+  text-decoration: line-through;
+  text-decoration-color: var(--lattice-task-cancelled-strike);
+  text-decoration-thickness: 1px;
+}
+:root body :is(ul > li.task-list-item, .markdown-source-view.mod-cm6 .HyperMD-task-line)[data-task="-"] input.task-list-item-checkbox:checked {
+  background-color: transparent;
+  border: 1px solid var(--lattice-task-cancelled-box);
+}
+/* ::after 要填滿內框並把 mask 置中，否則加了外框後會偏到右下 */
+:root body :is(ul > li.task-list-item, .markdown-source-view.mod-cm6 .HyperMD-task-line)[data-task="-"] input.task-list-item-checkbox:checked::after {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 7h8' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  top: 0;
+  left: 0;
+  inset-inline-start: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
+  background-color: var(--lattice-task-cancelled-dash);
+}
+
+/* 日期、優先度、重複等欄位與反向連結：縮小淡化。emoji 保留彩色、按鈕常駐。 */
+:root body .tasks-list-text :is(.task-priority, .task-recurring, .task-onCompletion, .task-created, .task-start, .task-scheduled, .task-due, .task-cancelled, .task-done, .task-id, .task-dependsOn),
+:root body .task-extras,
+:root body .task-count {
+  font-size: 0.8125em;
+  color: var(--text-faint);
+}
+:root body .task-extras .tasks-backlink a {
+  color: var(--text-faint);
+}
+:root body .task-extras .tasks-backlink a:hover {
+  color: var(--text-muted);
+}
+
+/* 查詢工具列：輸入框只留底線，圖示與按鈕淡化 */
+:root body .plugin-tasks-toolbar input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text-muted);
+  font-size: 0.8125em;
+}
+:root body .plugin-tasks-toolbar input::placeholder {
+  color: var(--text-faint);
+}
+:root body .plugin-tasks-toolbar svg {
+  color: var(--text-faint);
+}
+:root body .plugin-tasks-toolbar button {
+  background: transparent;
+  box-shadow: none;
+  color: var(--text-faint);
+}
+:root body .plugin-tasks-toolbar button:hover {
+  color: var(--text-muted);
+  background: var(--background-modifier-hover);
+}
+
+/* 對齊修正：HTML 清單的 checkbox 跟 Live Preview 用同一組垂直置中值 */
+:root body .markdown-rendered li.task-list-item > input.task-list-item-checkbox {
+  vertical-align: middle;
+  top: calc(var(--checkbox-size) / -12);
+}
+
+/* ===================================================================
+ * §13 圖片、Properties
+ * 嵌入筆記維持 Obsidian 預設；介面只靠字型與色彩變數，不改結構。
+ * =================================================================== */
+:root body :is(.markdown-rendered, .markdown-source-view.mod-cm6) .image-embed img {
+  max-width: 100%;
+  border-radius: 6px;
+}
+
+:root body .metadata-container {
+  --metadata-label-font-size: 0.8125rem;
+  --metadata-input-font-size: 0.8125rem;
+  --metadata-label-text-color: var(--text-faint);
+  --metadata-input-text-color: var(--text-muted);
+  padding-bottom: 0.75em;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+:root body .metadata-container :is(.metadata-property-key, .metadata-property-value) {
+  font-size: 0.8125rem;
+}
+:root body .metadata-container .metadata-property-key {
+  color: var(--text-faint);
+}
+:root body .metadata-container .metadata-property-value {
+  color: var(--text-muted);
+}
+:root body .metadata-container .metadata-properties-heading {
+  display: none;
+}
+
+/* ===================================================================
+ * §14 深色配色：A「中性石墨」
+ * 系統色 --color-red…--color-pink、--text-error／warning／success 與語法上色 --code-* 沿用 Obsidian 預設。
+ * =================================================================== */
+:root body.theme-dark {
+  /* 灰階與背景 */
+  --color-base-00: #262626;
+  --color-base-05: #222222;
+  --color-base-10: #2c2c2c;
+  --color-base-20: #202020;
+  --color-base-25: #303030;
+  --color-base-30: #363636;
+  --color-base-35: #3f3f3f;
+  --color-base-40: #4a4a4a;
+  --color-base-50: #666666;
+  --color-base-60: #7f7f7f;
+  --color-base-70: #999999;
+  --color-base-100: #d1d1d1;
+
+  --background-primary: #262626;
+  --background-primary-alt: #2c2c2c;
+  --background-secondary: #202020;
+  --background-secondary-alt: #1c1c1c;
+  --background-modifier-border: #363636;
+  --background-modifier-hover: rgba(255, 255, 255, 0.05);
+  --background-modifier-form-field: #2c2c2c;
+
+  /* 文字與強調色 */
+  --text-normal: #d1d1d1;
+  --text-muted: #999999;
+  --text-faint: #666666;
+  --text-accent: #87a6cc;
+  --text-accent-hover: #a3bcdb;
+  --interactive-accent: #87a6cc;
+  --interactive-accent-hover: #a3bcdb;
+  --link-color: #87a6cc;
+  --link-external-color: #87a6cc;
+  --accent-h: 213;
+  --accent-s: 40%;
+  --accent-l: 66%;
+  --text-selection: rgba(135, 166, 204, 0.25);
+  --text-highlight-bg: rgba(220, 190, 110, 0.22);
+  --interactive-normal: #2c2c2c;
+  --interactive-hover: #333333;
+
+  /* 元素 */
+  --tag-color: #999999;
+  --tag-color-hover: #d1d1d1;
+  --tag-background: transparent;
+  --tag-background-hover: #2c2c2c;
+  --tag-border-width: 1px;
+  --tag-border-color: #3f3f3f;
+
+  --checkbox-color: #666666;
+  --checkbox-color-hover: #7f7f7f;
+  --checkbox-marker-color: #262626;
+  --checklist-done-color: #666666;
+
+  --code-background: #2c2c2c;
+
+  --lattice-code-inline-bg: #333333;
+  --lattice-table-header-rule: #4a4a4a;
+  --lattice-quote-line: #555555;
+  --lattice-task-cancelled-strike: #4a4a4a;
+  --lattice-task-cancelled-box: #666666;
+  --lattice-task-cancelled-dash: #7f7f7f;
+
+  /* callout 類型色（RGB） */
+  --callout-default: 135, 166, 204;
+  --callout-info: 135, 166, 204;
+  --callout-todo: 135, 166, 204;
+  --callout-tip: 140, 180, 150;
+  --callout-success: 140, 180, 150;
+  --callout-summary: 140, 180, 180;
+  --callout-question: 205, 170, 110;
+  --callout-warning: 205, 170, 110;
+  --callout-fail: 205, 130, 130;
+  --callout-error: 205, 130, 130;
+  --callout-bug: 205, 130, 130;
+  --callout-example: 170, 150, 200;
+  --callout-important: 170, 150, 200;
+  --callout-quote: 153, 153, 153;
+}
+
+/* ===================================================================
+ * §15 淺色配色：F「微暖・保守」
+ * =================================================================== */
+:root body.theme-light {
+  /* 灰階與背景 */
+  --color-base-00: #edebe7;
+  --color-base-05: #e8e6e2;
+  --color-base-10: #e4e2de;
+  --color-base-20: #e5e3de;
+  --color-base-25: #dbd9d5;
+  --color-base-30: #d7d5d1;
+  --color-base-35: #ceccc8;
+  --color-base-40: #c5c3bf;
+  --color-base-50: #928f89;
+  --color-base-60: #797670;
+  --color-base-70: #5f5c57;
+  --color-base-100: #363431;
+
+  --background-primary: #edebe7;
+  --background-primary-alt: #e4e2de;
+  --background-secondary: #e5e3de;
+  --background-secondary-alt: #dcdad5;
+  --background-modifier-border: #d7d5d1;
+  --background-modifier-hover: rgba(0, 0, 0, 0.045);
+  --background-modifier-form-field: #f4f3f1;
+
+  /* 文字與強調色 */
+  --text-normal: #363431;
+  --text-muted: #5f5c57;
+  --text-faint: #928f89;
+  --text-accent: #44638a;
+  --text-accent-hover: #2f4a6a;
+  --interactive-accent: #44638a;
+  --interactive-accent-hover: #2f4a6a;
+  --link-color: #44638a;
+  --link-color-hover: #2f4a6a;
+  --link-external-color: #44638a;
+  --link-external-color-hover: #2f4a6a;
+  --text-on-accent: #ffffff;
+  --accent-h: 213;
+  --accent-s: 34%;
+  --accent-l: 40%;
+  --text-selection: rgba(68, 99, 138, 0.2);
+  --text-highlight-bg: rgba(222, 184, 85, 0.36);
+  --interactive-normal: #e4e2de;
+  --interactive-hover: #dbd9d5;
+
+  /* 系統色：預設的鮮豔色是給白底用的，放在暖灰底上太亮 */
+  --color-red: #9d3f3c;
+  --color-red-rgb: 157, 63, 60;
+  --color-orange: #885028;
+  --color-orange-rgb: 136, 80, 40;
+  --color-yellow: #76591e;
+  --color-yellow-rgb: 118, 89, 30;
+  --color-green: #466536;
+  --color-green-rgb: 70, 101, 54;
+  --color-cyan: #2c6666;
+  --color-cyan-rgb: 44, 102, 102;
+  --color-blue: #3e6089;
+  --color-blue-rgb: 62, 96, 137;
+  --color-purple: #6f4f94;
+  --color-purple-rgb: 111, 79, 148;
+  --color-pink: #8f456a;
+  --color-pink-rgb: 143, 69, 106;
+  --text-error: #9d3f3c;
+  --text-warning: #885028;
+  --text-success: #466536;
+
+  /* 語法上色：逐項指定，不依賴預設對應 */
+  --code-normal: #363431;
+  --code-comment: #797670;
+  --code-function: #76591e;
+  --code-important: #885028;
+  --code-keyword: #8f456a;
+  --code-operator: #9d3f3c;
+  --code-tag: #9d3f3c;
+  --code-property: #2c6666;
+  --code-punctuation: #5f5c57;
+  --code-string: #466536;
+  --code-value: #6f4f94;
+
+  /* 元素 */
+  --tag-color: #5f5c57;
+  --tag-color-hover: #363431;
+  --tag-background: transparent;
+  --tag-background-hover: #e4e2de;
+  --tag-border-width: 1px;
+  --tag-border-color: #d7d5d1;
+
+  --checkbox-color: #928f89;
+  --checkbox-border-color: #928f89;
+  --checkbox-color-hover: #797670;
+  --checkbox-marker-color: #edebe7;
+  --checklist-done-color: #928f89;
+
+  --code-background: #e4e2de;
+
+  --lattice-code-inline-bg: #dedcd8;
+  --lattice-table-header-rule: #c5c3bf;
+  --lattice-quote-line: #b2b0ad;
+  --lattice-task-cancelled-strike: #c5c3bf;
+  --lattice-task-cancelled-box: #928f89;
+  --lattice-task-cancelled-dash: #797670;
+
+  /* callout 類型色（RGB） */
+  --callout-default: 61, 98, 143;
+  --callout-info: 61, 98, 143;
+  --callout-todo: 61, 98, 143;
+  --callout-tip: 81, 123, 91;
+  --callout-success: 81, 123, 91;
+  --callout-summary: 81, 123, 123;
+  --callout-question: 152, 115, 52;
+  --callout-warning: 152, 115, 52;
+  --callout-fail: 146, 58, 58;
+  --callout-error: 146, 58, 58;
+  --callout-bug: 146, 58, 58;
+  --callout-example: 96, 70, 134;
+  --callout-important: 96, 70, 134;
+  --callout-quote: 95, 92, 87;
+}

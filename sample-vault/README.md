@@ -29,3 +29,14 @@
 ## Theme 開發
 
 開發 Lattice 時，theme 會放在 `.obsidian/themes/Lattice/`，存檔後 Obsidian 會自動重新載入 `theme.css`。
+樣本庫已在 `.obsidian/appearance.json` 指定使用 Lattice；改了 `manifest.json` 要重開 Obsidian。
+
+## Theme 需要的字型
+
+theme 不打包任何字型，以下三套要自行安裝。Inter 由 Obsidian 內建，不用另外裝。
+
+| 字型 | 用途 | 備註 |
+|---|---|---|
+| Noto Sans CJK TC（完整版，建議 notofonts/noto-cjk 的 Super OTC） | 中日文正文、標題 | Windows 內建的 `Noto Sans TC` 是缺字的子集版 |
+| Noto Serif CJK TC（完整版） | 引言 | 沒裝時退回新細明體 |
+| JetBrains Mono | 程式碼 | 從 JetBrains/JetBrainsMono 的 GitHub releases 下載；winget 上的 Nerd Font 版名稱對不上 |
