@@ -1,7 +1,7 @@
 // Lattice theme 檢查腳本：貼到 Obsidian 的 DevTools console（Ctrl+Shift+I → Console）執行。
 // 會檢查目前開著的所有 markdown 分頁（Reading view 與 Live Preview 都會看），
 // 會自動從頭捲到尾逐段量測（量完捲回原位），深淺兩種模式各量一次，
-// 最後把結果複製到剪貼簿。執行時畫面會捲動、閃爍，約需幾秒。
+// 最後把結果印在 console（並嘗試複製到剪貼簿）。執行時畫面會捲動、閃爍，約需幾秒。
 (async () => {
   const R = [];
   let ctx = "";
@@ -243,6 +243,11 @@
     ...fails.map((r) => `✗ [${r.ctx}] ${r.name}：期望 ${r.expected}，實際 ${r.actual}`),
     ...missing.map((r) => `? [${r.ctx}] ${r.name}`),
   ].join("\n");
-  try { copy(report); console.log("結果已複製到剪貼簿"); }
-  catch (e) { await navigator.clipboard.writeText(report).then(() => console.log("結果已複製到剪貼簿"), () => console.log(report)); }
+  // 結果一律印在 console；剪貼簿只是方便（await 之後拿不到 DevTools 的 copy()，
+  // navigator.clipboard 在焦點停在 DevTools 時也可能沒寫進去）
+  console.log(report);
+  await navigator.clipboard.writeText(report).then(
+    () => console.log("（也已嘗試複製到剪貼簿；如果貼上的不是結果，請直接從上面複製）"),
+    () => console.log("（沒有複製到剪貼簿，請直接從上面複製）"),
+  );
 })();
