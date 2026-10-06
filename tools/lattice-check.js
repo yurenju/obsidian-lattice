@@ -173,6 +173,12 @@
   const body = document.body;
   const original = body.classList.contains("theme-dark") ? "dark" : "light";
   const other = original === "dark" ? "light" : "dark";
+  // 找出實際會捲動的元素（Reading view 的 previewMode.containerEl 本身不一定會捲）
+  const findScroller = (root) =>
+    [root, ...root.querySelectorAll("*")].find((e) => {
+      const o = getComputedStyle(e).overflowY;
+      return (o === "auto" || o === "scroll") && e.scrollHeight > e.clientHeight + 1;
+    }) ?? root;
   const settle = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 150))));
 
   // 深淺各量一次（暫時換 body class，量完立刻換回）
@@ -191,7 +197,8 @@
     let label, root, scroller, check;
     if (v.getMode() === "preview") {
       label = `Reading｜${name}`;
-      root = scroller = v.previewMode.containerEl;
+      root = v.previewMode.containerEl;
+      scroller = findScroller(root);
       check = (r, P) => {
         checkReading(r, P);
         // 診斷：最外層段落的父元素是不是 .el-p（兩端對齊靠這個選擇器）
@@ -202,7 +209,7 @@
       root = v.contentEl.querySelector(".markdown-source-view");
       if (!root.classList.contains("is-live-preview")) continue;
       label = `Live Preview｜${name}`;
-      scroller = root.querySelector(".cm-scroller");
+      scroller = root.querySelector(".cm-scroller") ?? findScroller(root);
       check = checkLive;
     }
     const saved = scroller.scrollTop;
