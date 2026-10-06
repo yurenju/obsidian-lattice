@@ -206,10 +206,8 @@
   padding-inline-start: 0.75em;
 }
 
-/* Live Preview：文字縮排是 Obsidian 寫在行上的 inline style，改 padding 會被蓋掉，所以整行用 margin 移動。 */
-:root body .markdown-source-view.mod-cm6.is-live-preview .HyperMD-quote {
-  margin-inline-start: 0.75em;
-}
+/* Live Preview 不縮排：文字縮排是 Obsidian 寫在行上的 inline style，
+ * 每一行的 margin 又被 `.cm-content > * { margin: 0 !important }` 歸零，所以線留在行首。 */
 :root body .markdown-source-view.mod-cm6.is-live-preview .HyperMD-quote::before {
   inset-inline-start: 0;
   border-inline-start: 5px double var(--lattice-quote-line);
@@ -243,7 +241,8 @@
 :root body .callout-title {
   padding: 0;
   color: var(--text-normal);
-  font-weight: 700;
+  /* 字重實際寫在 .callout-title-inner，Obsidian 讀這個變數 */
+  --callout-title-weight: 700;
 }
 :root body .callout-icon {
   color: rgb(var(--callout-color));
