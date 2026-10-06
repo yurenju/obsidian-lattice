@@ -31,6 +31,16 @@
 開發 Lattice 時，theme 會放在 `.obsidian/themes/Lattice/`，存檔後 Obsidian 會自動重新載入 `theme.css`。
 樣本庫已在 `.obsidian/appearance.json` 指定使用 Lattice；改了 `manifest.json` 要重開 Obsidian。
 
+## 用檢查腳本確認樣式
+
+repo 根目錄的 `tools/lattice-check.js` 會讀出每個元素實際套用的樣式（computed style），逐項對照規格。
+
+1. 打開「元素總覽」，分成左右兩欄，一欄 Live Preview、一欄 Reading view。想一併檢查 Tasks 查詢，再開一個分頁放 `專案筆記/2026-10-05.md`。
+2. 按 `Ctrl+Shift+I` 打開 DevTools 的 Console，貼上整個檔案執行。
+3. 腳本會自動從頭捲到尾逐段量測，並暫時切到另一種色彩模式再量一次，量完恢復原狀。結果會複製到剪貼簿：`✗` 是不符合規格的項目，`?` 是開著的筆記裡都沒有這種元素。
+
+改了規格裡的數值時，記得同步更新腳本裡的期望值。
+
 ## Theme 需要的字型
 
 theme 不打包任何字型，以下三套要自行安裝。Inter 由 Obsidian 內建，不用另外裝。

@@ -234,10 +234,8 @@
   border-radius: 0;
   background-color: transparent;
 }
-/* Live Preview：Obsidian 用 `.markdown-source-view.mod-cm6 .callout { margin: 0 }` 把縮排歸零 */
-:root body .markdown-source-view.mod-cm6 .callout {
-  margin-inline-start: 1em;
-}
+/* Live Preview 不縮排：Obsidian 的 `.markdown-source-view.mod-cm6 .callout { margin: 0 }` 權重較高，
+ * 保留它，讓 callout 的線跟 Live Preview 的引言一樣在行首 */
 :root body .callout-title {
   padding: 0;
   color: var(--text-normal);
