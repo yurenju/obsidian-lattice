@@ -8,9 +8,11 @@
  *   才蓋得過 Obsidian 的 `.theme-dark` 重設與 Android 的 `.is-mobile.theme-dark`（0,2,0）。
  * - `--font-text-size` 這類被 Obsidian 寫在 body inline style 的變數，寫在 `.app-container`。
  * - Live Preview 的垂直間距只用 padding，不用 margin（CodeMirror 靠行高算游標位置）。
- * - 元素樣式裡的顏色一律用 `--lattice-*` token，深淺兩版各自給值。
+ * - 元素樣式不寫死色碼：用 Obsidian 的色彩變數（--text-faint 等），
+ *   沒有對應變數的顏色另設 `--lattice-*` token，深淺兩版各自給值。
  * - 其餘規則一律以 `:root body` 開頭（多 0,1,1 的權重），才蓋得過 Obsidian 的
- *   `.markdown-rendered thead tr > th` 這類選擇器。權重與試作分支的 `body.lattice-elem` 相同。
+ *   `.markdown-rendered thead tr > th` 這類選擇器。權重與試作分支（prototype/elements 等）
+ *   的 `body.lattice-elem` 相同，所以畫面跟試作時看到的一致。
  */
 
 /* ===================================================================
@@ -189,10 +191,8 @@
   border-inline-start: 5px double var(--lattice-quote-line);
 }
 
-/* Reading view：只有最外層整段縮排，巢狀引言沿用預設位置 */
-:root body .markdown-rendered blockquote:not(blockquote blockquote) {
-  margin-inline-start: 1em;
-  padding-inline-start: 0.75em;
+:root body .markdown-rendered blockquote:not(blockquote blockquote),
+:root body .markdown-source-view.mod-cm6.is-live-preview .HyperMD-quote {
   font-family: var(--lattice-quote-font);
   --font-weight: 300; /* **粗體** = 300 + 350 = 650，落在 Bold 槽 */
   font-weight: var(--font-weight);
@@ -200,14 +200,15 @@
   line-height: 1.65;
 }
 
+/* Reading view：只有最外層整段縮排，巢狀引言沿用預設位置 */
+:root body .markdown-rendered blockquote:not(blockquote blockquote) {
+  margin-inline-start: 1em;
+  padding-inline-start: 0.75em;
+}
+
 /* Live Preview：文字縮排是 Obsidian 寫在行上的 inline style，改 padding 會被蓋掉，所以整行用 margin 移動。 */
 :root body .markdown-source-view.mod-cm6.is-live-preview .HyperMD-quote {
   margin-inline-start: 0.75em;
-  font-family: var(--lattice-quote-font);
-  --font-weight: 300;
-  font-weight: var(--font-weight);
-  font-size: 0.9375em;
-  line-height: 1.65;
 }
 :root body .markdown-source-view.mod-cm6.is-live-preview .HyperMD-quote::before {
   inset-inline-start: 0;
@@ -285,12 +286,21 @@
 :root body .markdown-rendered :not(pre) > code,
 :root body .markdown-source-view.mod-cm6 .cm-inline-code {
   background-color: var(--lattice-code-inline-bg);
-  border-radius: 3px;
   box-shadow: none;
 }
 /* Live Preview 不加內距：游標進入時反引號會被拆成好幾個 span */
 :root body .markdown-rendered :not(pre) > code {
   padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+/* Live Preview 拆開的 span 由 Obsidian 依 --code-radius 分段畫圓角，只改這個值 */
+:root body .markdown-source-view.mod-cm6 .cm-inline-code {
+  --code-radius: 3px;
+}
+/* 縮排程式碼區塊裡的 span 也帶 .cm-inline-code，維持 Obsidian 的 inherit，不套行內樣式 */
+:root body .markdown-source-view.mod-cm6 .HyperMD-codeblock .cm-inline-code {
+  background-color: inherit;
+  font-size: inherit;
 }
 
 /* ===================================================================
@@ -311,7 +321,14 @@
   border-bottom-color: var(--lattice-table-header-rule);
   color: var(--text-muted);
   font-weight: 700;
+}
+/* 只動沒指定對齊的欄，`:---:`、`---:` 的表頭照原本的對齊 */
+:root body :is(.markdown-rendered, .cm-table-widget) table th:not([align]) {
   text-align: left;
+}
+/* Live Preview 的儲存格內距在 .table-cell-wrapper 上（Obsidian 把 th、td 的 padding 設成 0） */
+:root body .markdown-source-view.mod-cm6 .cm-table-widget .table-cell-wrapper {
+  padding: 6px 1.25em;
 }
 
 /* 修正：Live Preview 寬表格的拖曳把手與「新增欄」按鈕超出 widget 右緣，觸發捲軸 */
